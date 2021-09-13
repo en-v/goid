@@ -42,17 +42,17 @@ func EmptyCustom(size int) BBID {
 	}
 }
 
-func (this *BBID) IsEmpty() bool {
-	for i := range this.data {
-		if this.data[i] != 0 {
+func (self *BBID) IsEmpty() bool {
+	for i := range self.data {
+		if self.data[i] != 0 {
 			return false
 		}
 	}
 	return true
 }
 
-func (this *BBID) String() string {
-	return hex.EncodeToString(this.data)
+func (self *BBID) String() string {
+	return hex.EncodeToString(self.data)
 }
 
 func Parse(str string) BBID {
@@ -66,12 +66,12 @@ func Parse(str string) BBID {
 	return new
 }
 
-func (this *BBID) Len() int {
-	return len(this.data)
+func (self *BBID) Len() int {
+	return len(self.data)
 }
 
-func (this *BBID) UInt64() uint64 {
-	return binary.LittleEndian.Uint64(this.data)
+func (self *BBID) UInt64() uint64 {
+	return binary.LittleEndian.Uint64(self.data)
 }
 
 func JustString() string {
@@ -86,37 +86,37 @@ func JustCustomString(size int) string {
 
 // Custom JSON marshallind and unmarshalling
 
-func (this *BBID) MarshalJSON() ([]byte, error) {
-	return []byte("\"" + this.String() + "\""), nil
+func (self *BBID) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + self.String() + "\""), nil
 }
 
-func (this *BBID) UnmarshalJSON(data []byte) (err error) {
+func (self *BBID) UnmarshalJSON(data []byte) (err error) {
 
-	this.data, err = hex.DecodeString(string(data[1 : len(data)-1]))
+	self.data, err = hex.DecodeString(string(data[1 : len(data)-1]))
 	if err != nil {
-		this.data = make([]byte, DEF_SIZE)
-		this.size = DEF_SIZE
+		self.data = make([]byte, DEF_SIZE)
+		self.size = DEF_SIZE
 		return err
 	}
-	this.size = len(this.data)
+	self.size = len(self.data)
 	return nil
 }
 
 // Custom BSON marshallind and unmarshalling
 
-func (this *BBID) MarshalBSONValue() (bsontype.Type, []byte, error) {
-	return bson.MarshalValue(this.String())
+func (self *BBID) MarshalBSONValue() (bsontype.Type, []byte, error) {
+	return bson.MarshalValue(self.String())
 }
 
-func (this *BBID) UnmarshalBSONValue(t bsontype.Type, data []byte) (err error) {
-	this.data, err = hex.DecodeString(string(data[4 : len(data)-1]))
+func (self *BBID) UnmarshalBSONValue(t bsontype.Type, data []byte) (err error) {
+	self.data, err = hex.DecodeString(string(data[4 : len(data)-1]))
 	if err != nil {
 		log.Error(err)
-		this.data = make([]byte, DEF_SIZE)
-		this.size = DEF_SIZE
+		self.data = make([]byte, DEF_SIZE)
+		self.size = DEF_SIZE
 		return err
 	}
 
-	this.size = len(this.data)
+	self.size = len(self.data)
 	return nil
 }
