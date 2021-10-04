@@ -10,19 +10,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
-const DEF_SIZE = 8
+const DEFAULT_SIZE = 8
 
-type BBID struct {
+type GoId struct {
 	size int
 	data []byte
 }
 
-func New() BBID {
-	return NewCustom(DEF_SIZE)
+func New() GoId {
+	return NewCustom(DEFAULT_SIZE)
 }
 
-func NewCustom(size int) BBID {
-	new := BBID{
+func NewCustom(size int) GoId {
+	new := GoId{
 		data: make([]byte, size),
 	}
 	_, err := rand.Read(new.data)
@@ -32,17 +32,17 @@ func NewCustom(size int) BBID {
 	return new
 }
 
-func Empty() BBID {
-	return EmptyCustom(DEF_SIZE)
+func Empty() GoId {
+	return EmptyCustom(DEFAULT_SIZE)
 }
 
-func EmptyCustom(size int) BBID {
-	return BBID{
+func EmptyCustom(size int) GoId {
+	return GoId{
 		data: make([]byte, size),
 	}
 }
 
-func (self *BBID) IsEmpty() bool {
+func (self *GoId) IsEmpty() bool {
 	for i := range self.data {
 		if self.data[i] != 0 {
 			return false
@@ -51,11 +51,11 @@ func (self *BBID) IsEmpty() bool {
 	return true
 }
 
-func (self *BBID) String() string {
+func (self *GoId) String() string {
 	return hex.EncodeToString(self.data)
 }
 
-func Parse(str string) BBID {
+func Parse(str string) GoId {
 	arr, err := hex.DecodeString(str)
 	if err != nil {
 		println(err)
@@ -66,16 +66,16 @@ func Parse(str string) BBID {
 	return new
 }
 
-func (self *BBID) Len() int {
+func (self *GoId) Len() int {
 	return len(self.data)
 }
 
-func (self *BBID) UInt64() uint64 {
+func (self *GoId) UInt64() uint64 {
 	return binary.LittleEndian.Uint64(self.data)
 }
 
 func JustString() string {
-	b := NewCustom(DEF_SIZE)
+	b := NewCustom(DEFAULT_SIZE)
 	return b.String()
 }
 
@@ -86,16 +86,16 @@ func JustCustomString(size int) string {
 
 // Custom JSON marshallind and unmarshalling
 
-func (self *BBID) MarshalJSON() ([]byte, error) {
+func (self *GoId) MarshalJSON() ([]byte, error) {
 	return []byte("\"" + self.String() + "\""), nil
 }
 
-func (self *BBID) UnmarshalJSON(data []byte) (err error) {
+func (self *GoId) UnmarshalJSON(data []byte) (err error) {
 
 	self.data, err = hex.DecodeString(string(data[1 : len(data)-1]))
 	if err != nil {
-		self.data = make([]byte, DEF_SIZE)
-		self.size = DEF_SIZE
+		self.data = make([]byte, DEFAULT_SIZE)
+		self.size = DEFAULT_SIZE
 		return err
 	}
 	self.size = len(self.data)
@@ -104,16 +104,16 @@ func (self *BBID) UnmarshalJSON(data []byte) (err error) {
 
 // Custom BSON marshallind and unmarshalling
 
-func (self *BBID) MarshalBSONValue() (bsontype.Type, []byte, error) {
+func (self *GoId) MarshalBSONValue() (bsontype.Type, []byte, error) {
 	return bson.MarshalValue(self.String())
 }
 
-func (self *BBID) UnmarshalBSONValue(t bsontype.Type, data []byte) (err error) {
+func (self *GoId) UnmarshalBSONValue(t bsontype.Type, data []byte) (err error) {
 	self.data, err = hex.DecodeString(string(data[4 : len(data)-1]))
 	if err != nil {
 		log.Error(err)
-		self.data = make([]byte, DEF_SIZE)
-		self.size = DEF_SIZE
+		self.data = make([]byte, DEFAULT_SIZE)
+		self.size = DEFAULT_SIZE
 		return err
 	}
 
